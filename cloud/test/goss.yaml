@@ -1,0 +1,7 @@
+file:
+  /home/project-name/services/front-end:
+    exists: true
+    contains: []
+user:
+  project-name:
+    exists: true

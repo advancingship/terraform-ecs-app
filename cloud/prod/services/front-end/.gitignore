@@ -1,0 +1,13 @@
+*.dll
+*.exe
+.DS_Store
+example.tf
+terraform.tfplan
+terraform.tfstate
+*.backup
+image.tar
+./*.tfstate
+.terraform/
+*~
+*.log
+*.bak

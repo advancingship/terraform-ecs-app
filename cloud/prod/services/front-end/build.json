@@ -1,0 +1,62 @@
+{
+    "builders": [{
+	"type": "docker",
+	"image": "ubuntu:16.04",
+	"export_path": "image.tar"
+    }],
+    "provisioners" : [
+	{
+	    "type": "shell",
+	    "inline": [
+		"sleep 30",
+		"apt-get update",
+		"apt-get install -y sudo",
+		"sudo apt-get update",
+		"sudo apt-get install -y curl",
+		"sudo useradd -d /home/project-name -m project-name -p project-name",
+		"sudo apt install -y build-essential checkinstall libssl-dev",
+		"curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.35.1/install.sh | bash",
+		"mkdir -p /home/project-name/services/",
+		"sudo mkdir -p /tmp/goss/test"		
+	    ]
+	},{
+	    "type": "file",
+	    "source": "../../../test",
+	    "destination": "/home/project-name/"
+	},{
+	    "type": "file",
+	    "source": "../../../test/goss.yaml",
+	    "destination": "/home/project-name/goss.yaml"
+	},{
+	    "type": "file",
+	    "source": "../../../../front-end",
+	    "destination": "/home/project-name/services/"
+	},{
+	    "type": "shell",
+	    "inline": [
+		". /root/.nvm/nvm.sh",
+		"nvm install 13.12.0",
+		"cp -r /tmp/versions/node /opt",
+		"cd /bin",
+		"ln -s /opt/node/v13.12.0/bin/npm",
+		"ln -s /opt/node/v13.12.0/bin/node",
+		"ln -s /opt/node/v13.12.0/bin/npx",		
+	    	"cd /home/project-name/services/front-end",
+		"npm install",
+		"npm audit fix"
+	    ]
+	},{
+	    "type": "goss",
+	    "tests": [
+		"../../../test/goss.yaml"
+	    ]
+	}
+    ],
+    "post-processors": [
+	{
+	    "type": "manifest",
+	    "output": "manifest.json",
+	    "strip_path": true
+	}
+    ]
+}
