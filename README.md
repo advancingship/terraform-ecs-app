@@ -1,5 +1,9 @@
 #### TERRAFORM-ECS-APP
-This is an example of reusable code to automate launching a docker image of a web-application (in this example, a create-react-app) into the aws cloud on an ec2(elastic compute) instance using ECS (elastic container service).  The Infrastructure As Code is given basic tests with GOSS to test the Docker image and also with Terratest to test the Terraform automation.
+This project contains an fully-functioning minimal implementation of reusable code that automates the provisioning of a docker image of a web-application and launching it into the AWS cloud on an ec2 (Elastic Compute) instance using ECS (Elastic Container Service).  The provided web-app is same operational but featureless app one gets from running 'npx create-react-app front-end'.  The Infrastructure As Code is given basic tests with Goss to test the Docker image and also with Terratest to test the Terraform automation.
+
+If you would like to use something other than React for your app, replace the shell commands for installing libraries, nvm, node, npm and npx in the provisioners block in /cloud/prod/services/front-end/build.json with commands to install the libraries, languages and frameworks of your choosing.
+
+If you choose to change the name of the project from "project-name" to something else, you must change it in the build.json and user-data.sh files in /cloud/prod/services/front-end as well as in /cloud/test/goss.yaml
 
 #### Key
 in any code following, any text with a star to the left and right such as  
@@ -21,10 +25,14 @@ an AWS account ***WHICH REQUIRES MONEY*** for uses such as launching and hosting
 aws-cli/1.18.102 Python/3.7.4 Linux/5.4.0-51-generic botocore/1.17.25  
 environmental variables as follows  
     
-#### Environmental Variables
-these are set on your machine to run the terraform operations  
+#### Home Environment and Environmental Variables
+These variables are set on your home environment (the OS on the physical machine you use for development) to run the terraform operations. On Linux and Mac OS, this is generally done using shell commands on the command line in a terminal window.  Given one wants to set a variable, "THE_VARIABLE" to the value, "the_value" the command is commonly:
 
+    export THE_VARIABLE=the_value
 
+In order to have this variable exist as such every time one opens a terminal window, it is common to add such commands to the one's startup shell script in one's home directory.  The shell recognizes "~" as the home directory, so if one's username on one's home environment is "the_user" and they change the current directory with the command, "cd ~", on Ubuntu, they will find themselves in /home/the_user, and on Mac they will be found in /Users/the_user.  One may find or create a startup shell script file ~/.bashrc on Ubuntu, or ~/.bash_profile on Mac Os, assuming one's shell is Bash.
+
+It is recommended that one adds export commands for the following variables to their startup shell script:  
 
 the project directory in the docker image
       
@@ -34,7 +42,7 @@ the AWS key pair name
 
     TF_VAR_PROJECT_1_KEY_NAME=*key-name*
 
-the uri for the image in the repository  
+the URI for the image in the repository  
 
     TF_VAR_PROJECT_1_IMAGE_URI=*repository-url*:latest
 
@@ -50,7 +58,7 @@ the AWS access key ID
 
     AWS_ACCESS_KEY_ID=*access-key-id*
 
-#### Installation:
+#### Installation (shell commands):
 
 clone the project into the directory of your choice  
 
@@ -68,7 +76,7 @@ import the image with docker
  
     docker import image.tar
 
-#### Test or use the image:
+#### Test or use the image (shell commands on home environment or on ec2 instance.  Docker commands are not for use when in the container):
 
 copy the latest image ID from the output of docker images.  
 use 'sec' if imported less than a minute ago, 'min' if under an hour, etc.  
@@ -95,7 +103,7 @@ exit the container if entered
 
     exit
     
-#### Tag and push the image to an image repository:
+#### Tag and push the image to an image repository (home environment shell commands):
 
 then you can tag the image for an Amazon ECR repository URL like 
 000123456789.dkr.ecr.us-east-1.amazonaws.com/repo-name 
@@ -103,33 +111,33 @@ where the first number is your AWS account number
 
     docker tag *image-id* *repository-url*
     
-if ECR needs reauthentication  
+if ECR needs reauthentication (the previous command will tell you so)
 
     aws ecr get-login-password --region *region-such-as-us-east-1* | docker login --username *user-name-such-as-AWS* --password-stdin *repository-url*
   
-if AWS CLI needs an update  
+if AWS CLI needs an update (it might if something isn't working with AWS)
 
     pip install --upgrade awscli
     
-push the image to the repository  
+push the image to the repository  (the ECS task gets the image from there)
 
     docker push *repository-url*
     
-#### Test, Dismantle, and Launch the terraform:
+#### Test, Dismantle, and Launch the terraform (home environment shell commands):
   
-test the terraform if desired from the cloud/test directory
+test the terraform if desired (from the cloud/test directory)
 
     go test -v aws_ecs_terra_test.go
     
-plan the launch from the cloud/prod/services/front-end directory  
+plan the launch (from the cloud/prod/services/front-end directory)  
  
     terraform plan
     
-dismantle, typing yes when prompted if already launched  
+dismantle what was launched (from the cloud/prod/services/front-end directory), typing yes when prompted if already launched  
 
     terraform destroy
 
-launch, typing yes when prompted ***MONEY, CHARGES APPLY***  
+launch (from the cloud/prod/services/front-end directory), typing yes when prompted ***MONEY, CHARGES APPLY***  
 
     terraform apply
 
