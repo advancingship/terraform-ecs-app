@@ -1,5 +1,5 @@
 #### TERRAFORM-ECS-APP
-This project contains an fully-functioning minimal implementation of reusable code that automates the provisioning of a docker image of a web-application and launching it into the AWS cloud on an ec2 (Elastic Compute) instance using ECS (Elastic Container Service).  The provided web-app is same operational but featureless app one gets from running 'npx create-react-app front-end'.  The Infrastructure As Code is given basic tests with Goss to test the Docker image and also with Terratest to test the Terraform automation.
+This project contains an fully-functioning minimal implementation of reusable code that automates provisioning a docker image of a web-application and launching it into the AWS cloud on an EC2 (Elastic Compute) instance using ECS (Elastic Container Service).  The provided web-app is same operational but featureless app one gets from running 'npx create-react-app front-end'.  The Infrastructure As Code is given basic tests with Goss to test the Docker image and also with Terratest to test the Terraform automation.
 
 If you would like to use something other than React for your app, replace the shell commands for installing libraries, nvm, node, npm and npx in the provisioners block in /cloud/prod/services/front-end/build.json with commands to install the libraries, languages and frameworks of your choosing.
 
